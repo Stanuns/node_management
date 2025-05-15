@@ -9,7 +9,7 @@ sudo apt-get install libyaml-cpp-dev
 
 启动节点管理service server节点：
 ```bashrc
-ros2 run node_mgmt_py node_mgmt_service
+ros2 run node_management node_mgmt_service
 ```
 
 调用service名称: /node_start_stop
