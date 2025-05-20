@@ -149,7 +149,7 @@ class NodeMgmt(Node):
             ])
         ]
         #---------------navigation2-end---------------
-        self.get_logger().info("success")
+        self.get_logger().info("node mgmt initiative successfully")
 
     def timer_callback(self):
         msg = Bool()
@@ -255,8 +255,15 @@ class NodeMgmt(Node):
             if (pPool[0].pid is not None) and (if_runnning): 
                 for p in pPool:
                     print("----->before node stopping: "+str(p.pid))
-                    # use SIGINT instead of SIGTERM to stop child processes ahead of launch service
-                    os.kill(p.pid, signal.SIGINT)
+                    # For navigation2, send SIGTERM first, then SIGKILL if needed
+                    if node_name == "navigation2":
+                        os.kill(p.pid, signal.SIGTERM)
+                        time.sleep(1)  # Wait for graceful shutdown
+                        if p.is_alive():  # If still running after SIGTERM
+                            os.kill(p.pid, signal.SIGKILL)
+                    else:
+                        # use SIGINT instead of SIGTERM to stop child processes ahead of launch service
+                        os.kill(p.pid, signal.SIGINT)
                     print("----->after node stopping: "+str(p.pid))
                 for p in pPool:
                     p.join()
